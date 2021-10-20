@@ -88,7 +88,7 @@ from gluon.storage import Storage
 from gluon.sqlhtml import *
 
 from ..s3 import *
-from s3compat import StringIO, xrange
+from s3compat import PY2, StringIO, xrange
 from s3chart import S3Chart
 
 DEBUG = False
@@ -2616,6 +2616,7 @@ class S3SurveyCompleteModel(S3Model):
 
         import csv
         import os
+        from tempfile import TemporaryFile
 
         strio = StringIO()
         strio.write(question_list)
@@ -2628,23 +2629,43 @@ class S3SurveyCompleteModel(S3Model):
                 row.insert(0, complete_id)
                 append(row)
 
-        from tempfile import TemporaryFile
-        csvfile = TemporaryFile()
-        writer = csv.writer(csvfile)
-        writerow = writer.writerow
-        writerow(["complete_id", "question_code", "value"])
-        for row in answer:
-            writerow(row)
-        csvfile.seek(0)
-        xsl = os.path.join("applications",
-                           current.request.application,
-                           "static",
-                           "formats",
-                           "s3csv",
-                           "survey",
-                           "answer.xsl")
-        resource = current.s3db.resource("survey_answer")
-        resource.import_xml(csvfile, stylesheet = xsl, format="csv",)
+        if PY2:
+            csvfile = TemporaryFile()
+            writer = csv.writer(csvfile)
+            writerow = writer.writerow
+            writerow(["complete_id", "question_code", "value"])
+            for row in answer:
+                writerow(row)
+            csvfile.seek(0)
+            xsl = os.path.join("applications",
+                               current.request.application,
+                               "static",
+                               "formats",
+                               "s3csv",
+                               "survey",
+                               "answer.xsl")
+            resource = current.s3db.resource("survey_answer")
+            resource.import_xml(csvfile, stylesheet = xsl, format="csv",)
+        else:
+            import codecs
+            bio = TemporaryFile()
+            StreamWriter = codecs.getwriter("utf-8")
+            csv_file = StreamWriter(bio)
+            writer = csv.writer(csv_file)
+            writerow = writer.writerow
+            writerow(["complete_id", "question_code", "value"])
+            for row in answer:
+                writerow(row)
+            bio.seek(0)
+            xsl = os.path.join("applications",
+                               current.request.application,
+                               "static",
+                               "formats",
+                               "s3csv",
+                               "survey",
+                               "answer.xsl")
+            resource = current.s3db.resource("survey_answer")
+            resource.import_xml(bio, stylesheet=xsl, format="csv")
 
     # -------------------------------------------------------------------------
     @staticmethod
@@ -2655,6 +2676,7 @@ class S3SurveyCompleteModel(S3Model):
 
         import csv
         import os
+        from tempfile import TemporaryFile
 
         last_loc_widget = None
         code_list = ["STD-L0", "STD-L1", "STD-L2", "STD-L3", "STD-L4"]
@@ -2685,22 +2707,41 @@ class S3SurveyCompleteModel(S3Model):
             else:
                 aappend("")
 
-        from tempfile import TemporaryFile
-        csvfile = TemporaryFile()
-        writer = csv.writer(csvfile)
-        headings += ["Code2", "Lat", "Lon"]
-        writer.writerow(headings)
-        writer.writerow(answer)
-        csvfile.seek(0)
-        xsl = os.path.join("applications",
-                           current.request.application,
-                           "static",
-                           "formats",
-                           "s3csv",
-                           "gis",
-                           "location.xsl")
-        resource = current.s3db.resource("gis_location")
-        resource.import_xml(csvfile, stylesheet = xsl, format="csv")
+        if PY2:
+            csvfile = TemporaryFile()
+            writer = csv.writer(csvfile)
+            headings += ["Code2", "Lat", "Lon"]
+            writer.writerow(headings)
+            writer.writerow(answer)
+            csvfile.seek(0)
+            xsl = os.path.join("applications",
+                               current.request.application,
+                               "static",
+                               "formats",
+                               "s3csv",
+                               "gis",
+                               "location.xsl")
+            resource = current.s3db.resource("gis_location")
+            resource.import_xml(csvfile, stylesheet = xsl, format="csv")
+        else:
+            import codecs
+            bio = TemporaryFile()
+            StreamWriter = codecs.getwriter("utf-8")
+            csv_file = StreamWriter(bio)
+            writer = csv.writer(csv_file)
+            headings += ["Code2", "Lat", "Lon"]
+            writer.writerow(headings)
+            writer.writerow(answer)
+            bio.seek(0)
+            xsl = os.path.join("applications",
+                               current.request.application,
+                               "static",
+                               "formats",
+                               "s3csv",
+                               "gis",
+                               "location.xsl")
+            resource = current.s3db.resource("gis_location")
+            resource.import_xml(bio, stylesheet = xsl, format="csv")
 
     # -------------------------------------------------------------------------
     @staticmethod

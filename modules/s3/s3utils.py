@@ -178,8 +178,10 @@ def s3_validate(table, field, value, record=None):
     except:
         # Oops - something went wrong in the validator:
         # write out a debug message, and continue anyway
-        current.log.error("Validate %s: %s (ignored)" %
-                          (field, sys.exc_info()[1]))
+        #import traceback
+        #traceback.print_tb(sys.exc_info()[2])
+        current.log.error("Validate %s: %s (%s)" %
+                          (field, value, sys.exc_info()[1]))
         return (None, None)
     else:
         return (value, error)

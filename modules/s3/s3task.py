@@ -51,7 +51,7 @@ from gluon.storage import Storage
 
 from s3compat import INTEGER_TYPES, basestring
 from .s3datetime import S3DateTime
-from .s3validators import IS_TIME_INTERVAL_WIDGET, IS_UTC_DATETIME
+from .s3validators import IS_UTC_DATETIME
 from .s3widgets import S3CalendarWidget, S3TimeIntervalWidget
 
 # -----------------------------------------------------------------------------
@@ -164,7 +164,7 @@ class S3Task(object):
         field.label = T("Run every")
         field.default = period
         field.widget = S3TimeIntervalWidget.widget
-        field.requires = IS_TIME_INTERVAL_WIDGET(table.period)
+        field.requires = IS_INT_IN_RANGE(0, None)
         field.represent = S3TimeIntervalWidget.represent
         field.comment = T("seconds")
 
@@ -224,7 +224,7 @@ class S3Task(object):
     # -------------------------------------------------------------------------
     # API Function run within the main flow of the application
     # -------------------------------------------------------------------------
-    def async(self, task, args=None, vars=None, timeout=300):
+    def run_async(self, task, args=None, vars=None, timeout=300):
         """
             Wrapper to call an asynchronous task.
             - run from the main request

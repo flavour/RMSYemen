@@ -9,6 +9,11 @@ div.olMapViewport {
     text-align: left;
 }
 
+body.rtl div.olMapViewport {
+    direction: ltr;
+    text-align: right !important;
+}
+
 div.olLayerDiv {
    -moz-user-select: none;
    -khtml-user-select: none;
