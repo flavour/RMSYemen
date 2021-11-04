@@ -2711,12 +2711,12 @@ class StringTemplateParser(object):
         return parser._keys
 
 # =============================================================================
-class S3MarkupStripper(HTMLParser):
+lass S3MarkupStripper(HTMLParser, object): # enforce new-style class in Py2
     """ Simple markup stripper """
 
     def __init__(self):
         super(S3MarkupStripper, self).__init__()
-        self.reset()
+        #self.reset() # Included in super-init
         self.result = []
 
     def handle_data(self, d):
