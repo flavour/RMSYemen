@@ -2711,7 +2711,7 @@ class StringTemplateParser(object):
         return parser._keys
 
 # =============================================================================
-lass S3MarkupStripper(HTMLParser, object): # enforce new-style class in Py2
+class S3MarkupStripper(HTMLParser, object): # enforce new-style class in Py2
     """ Simple markup stripper """
 
     def __init__(self):
