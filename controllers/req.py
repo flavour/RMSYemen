@@ -646,6 +646,7 @@ $.filterOptionsS3({
         if r.interactive:
             if r.method is None:
                 # Customise Action Buttons
+                s3_str = s3base.s3_str
                 if r.component:
                     s3_action_buttons(r, deletable=s3db.get_config(r.component.tablename, "deletable"))
                     if r.component.name == "req_item" and \
@@ -732,7 +733,6 @@ $.filterOptionsS3({
                                 r.next = URL(args=[form_vars.id, "req_skill"])
                     else:
                         s3_action_buttons(r, deletable =False)
-                        s3_str = s3base.s3_str
                         # Add delete button for those records which are not completed
                         # @ToDo: Handle icons
                         table = r.table
@@ -931,7 +931,7 @@ def req_item():
     output = s3_rest_controller("req", "req_item")
 
     if settings.get_req_prompt_match():
-        req_item_inv_item_btn = {"label": s3_str(T("Request from Facility")),
+        req_item_inv_item_btn = {"label": s3base.s3_str(T("Request from Facility")),
                                  "url": URL(c = "req",
                                             f = "req_item_inv_item",
                                             args = ["[id]"],
@@ -1051,7 +1051,7 @@ def req_item_inv_item():
             output["items_alt"] = T("No Inventories currently have suitable alternative items in stock")
 
     response.view = "req/req_item_inv_item.html"
-    s3.actions = [{"label": s3_str(T("Request From")),
+    s3.actions = [{"label": s3base.s3_str(T("Request From")),
                    "url": URL(c = request.controller,
                               f = "req",
                               args = [req_item.req_id, "req_item"],
